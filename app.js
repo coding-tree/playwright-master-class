@@ -11,8 +11,24 @@ const SEED_PRODUCTS = [
   },
 ];
 
-let products = JSON.parse(JSON.stringify(SEED_PRODUCTS));
-let nextId = 2;
+function loadProducts() {
+  const stored = localStorage.getItem("products");
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return JSON.parse(JSON.stringify(SEED_PRODUCTS));
+}
+
+function saveProducts() {
+  localStorage.setItem("products", JSON.stringify(products));
+}
+
+function getNextId() {
+  const maxId = products.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
+  return maxId + 1;
+}
+
+let products = loadProducts();
 
 function getUser() {
   return sessionStorage.getItem("user");
@@ -237,6 +253,7 @@ function handleUpdateProduct(id) {
     product.name = name;
     product.description = description;
     product.price = price;
+    saveProducts();
 
     const successEl = document.querySelector('[data-testid="form-success"]');
     successEl.textContent = "Product updated";
@@ -246,6 +263,7 @@ function handleUpdateProduct(id) {
 
 function handleDeleteProduct(id) {
   products = products.filter((p) => p.id !== id);
+  saveProducts();
 
   const successEl = document.querySelector('[data-testid="form-success"]');
   successEl.textContent = "Product deleted";
@@ -292,12 +310,13 @@ function handleCreateProduct() {
   const price = document.getElementById("price").value;
 
   const newProduct = {
-    id: String(nextId++),
+    id: String(getNextId()),
     name,
     description,
     price,
   };
   products.push(newProduct);
+  saveProducts();
 
   const successEl = document.querySelector('[data-testid="form-success"]');
   successEl.textContent = "Product created";
