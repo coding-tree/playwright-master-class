@@ -12,8 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "@locators/*": ["src/locators/*"],
-      "@components/*": ["src/components/*"],
-      "@pages/*": ["src/pages/*"],
+      "@screenplay/*": ["src/screenplay/*"],
       "@fixtures/*": ["src/fixtures/*"],
       "@test-data/*": ["test-data/*"]
     }

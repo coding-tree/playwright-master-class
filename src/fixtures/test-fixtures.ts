@@ -1,23 +1,15 @@
 import { test as base } from "@playwright/test";
-import { LoginPage } from "../pages/login.page.js";
-import { ProductsPage } from "../pages/products.page.js";
-import { ProductDetailPage } from "../pages/product-detail.page.js";
+import { Actor } from "../screenplay/actor.js";
+import { BrowseTheWeb } from "../screenplay/abilities/browse-the-web.js";
 
 type Fixtures = {
-  loginPage: LoginPage;
-  productsPage: ProductsPage;
-  productDetailPage: ProductDetailPage;
+  actor: Actor;
 };
 
 export const test = base.extend<Fixtures>({
-  loginPage: async ({ page }, use) => {
-    await use(new LoginPage(page));
-  },
-  productsPage: async ({ page }, use) => {
-    await use(new ProductsPage(page));
-  },
-  productDetailPage: async ({ page }, use) => {
-    await use(new ProductDetailPage(page));
+  actor: async ({ page }, use) => {
+    const actor = Actor.named("User").whoCan(BrowseTheWeb.using(page));
+    await use(actor);
   },
 });
 
