@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: "html",
+  reporter: process.env.CI ? [["html"], ["github"]] : [["html"]],
   use: {
     baseURL: process.env.BASE_URL || "https://coding-tree.github.io/playwright-master-class/",
     trace: "on-first-retry",
