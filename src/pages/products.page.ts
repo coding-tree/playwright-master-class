@@ -19,7 +19,7 @@ export class ProductsPage {
   }
 
   async goto() {
-    await this.page.goto("/products");
+    await this.page.goto("./products");
   }
 
   async expectHeading() {
