@@ -1,0 +1,15 @@
+{
+  "name": "playwright-master-class",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^25.1.0",
+    "typescript": "^5.7.0"
+  }
+}
