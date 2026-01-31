@@ -31,38 +31,49 @@ function getNextId() {
 let products = loadProducts();
 
 function getUser() {
-  return sessionStorage.getItem("user");
+  return localStorage.getItem("user");
 }
 
 function setUser(username) {
-  sessionStorage.setItem("user", username);
+  localStorage.setItem("user", username);
 }
 
 function clearUser() {
-  sessionStorage.removeItem("user");
+  localStorage.removeItem("user");
 }
 
 // --- Router ---
 
-function navigate(path) {
-  window.history.pushState({}, "", path);
+// Auto-detect base path: "" on localhost, "/playwright-master-class" on GitHub Pages
+const BASE_PATH = window.location.pathname.replace(/\/(login|products(\/.*)?)?$/, "") || "";
+
+function toFullPath(route) {
+  return BASE_PATH + route;
+}
+
+function getRoute() {
+  return window.location.pathname.slice(BASE_PATH.length) || "/";
+}
+
+function navigate(route) {
+  window.history.pushState({}, "", toFullPath(route));
   handleRoute();
 }
 
 function handleRoute() {
-  const path = window.location.pathname;
+  const route = getRoute();
 
-  if (path === "/login") {
+  if (route === "/login") {
     renderLoginPage();
-  } else if (path === "/products") {
+  } else if (route === "/products") {
     renderProductsPage();
-  } else if (path === "/products/new") {
+  } else if (route === "/products/new") {
     renderProductFormPage();
-  } else if (path.match(/^\/products\/[\w-]+$/)) {
-    const id = path.split("/").pop();
+  } else if (route.match(/^\/products\/[\w-]+$/)) {
+    const id = route.split("/").pop();
     renderProductDetailPage(id);
   } else {
-    navigate("/login");
+    navigate(getUser() ? "/products" : "/login");
   }
 }
 
@@ -74,7 +85,10 @@ document.addEventListener("click", (e) => {
   const link = e.target.closest("a");
   if (link && link.getAttribute("href")?.startsWith("/")) {
     e.preventDefault();
-    navigate(link.getAttribute("href"));
+    const href = link.getAttribute("href");
+    // If href already includes base path, strip it to get the route
+    const route = href.startsWith(BASE_PATH + "/") ? href.slice(BASE_PATH.length) : href;
+    navigate(route);
   }
 });
 
@@ -84,7 +98,7 @@ function renderNavbar() {
   const user = getUser();
   return `
     <nav>
-      <a href="/products">Products</a>
+      <a href="${toFullPath("/products")}">Products</a>
       <div class="spacer"></div>
       ${user ? `<span data-testid="navbar-username">${user}</span>` : ""}
       <button onclick="handleLogout()">Logout</button>
@@ -190,7 +204,7 @@ function renderProductCards(list) {
           <span data-testid="product-name">${p.name}</span>
           <span data-testid="product-price">$${p.price}</span>
         </div>
-        <a href="/products/${p.id}">View</a>
+        <a href="${toFullPath("/products/" + p.id)}">View</a>
       </div>
     `
       )
